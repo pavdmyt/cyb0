@@ -6,13 +6,12 @@ bot.app
 
 """
 
-# TODO: setup logging
-
 import sched
 import threading
 import time
 
 from flask import Flask, Response, request
+from structlog import get_logger
 from viberbot.api.messages.text_message import TextMessage
 from viberbot.api.viber_requests import (
     ViberConversationStartedRequest,
@@ -32,10 +31,13 @@ DEBUG = True
 
 app = Flask(__name__)
 viber = setup_viber_api()
+log = get_logger()
 
 
 @app.route("/", methods=["POST"])
 def incoming():
+    log.debug("received request", post_data=request.get_data())
+
     viber_request = viber.parse_request(request.get_data())
     req_types = (
         ViberConversationStartedRequest,
@@ -52,7 +54,7 @@ def incoming():
             [TextMessage(None, None, viber_request.get_event_type())],
         )
     elif isinstance(viber_request, ViberFailedRequest):
-        raise Exception("Client failed receiving message")
+        log.warn("client failed receiving message", failure=viber_request)
 
     return Response(status=200)
 
