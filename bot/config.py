@@ -10,6 +10,7 @@ Configuration data.
 import configparser
 import os
 
+
 _this_dir = os.path.dirname(os.path.realpath(__file__))
 _fpath = os.path.join(os.path.dirname(_this_dir), ".secrets")
 _cfg = configparser.ConfigParser()

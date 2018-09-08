@@ -111,3 +111,4 @@ dmypy.json
 
 # Custom
 .secrets
+sync.sh
